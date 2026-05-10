@@ -1,5 +1,3 @@
-using EzAuth.Keycloak;
-
 namespace EzAuth.Interfaces;
 
 public class EzAuthException(string message) : Exception(message);

@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace EzAuth.Keycloak;
+namespace EzAuth.Interfaces;
 
 public class EzAuthLoginTokens
 {
