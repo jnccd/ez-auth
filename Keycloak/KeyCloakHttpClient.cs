@@ -71,4 +71,9 @@ public class KeyCloakHttpClient(KeyCloakAddress keyCloakAddress, Action<string> 
         client.DefaultRequestHeaders.Add("Authorization", $"Basic {currentAccessToken}");
         return client.GetStringAsync(requestUri);
     }
+
+    public void Dispose()
+    {
+        client.Dispose();
+    }
 }
