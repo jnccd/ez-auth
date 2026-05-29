@@ -4,6 +4,11 @@ using System.Text.Json;
 
 namespace EzAuth.Interfaces;
 
+public class EzAuthAddress
+{
+    public string? RealmUrl { get; init; }
+    public string? Client { get; init; }
+}
 public class EzAuthLoginTokens
 {
     public string? AccessToken { get; init; }

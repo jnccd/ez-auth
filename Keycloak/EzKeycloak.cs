@@ -7,14 +7,16 @@ using EzAuth.Interfaces;
 
 namespace EzAuth.Keycloak;
 
-public class EzKeycloak : EzAuth.Interfaces.IEzAuth
+public class EzKeycloak : IEzAuth
 {
+    public static EzKeycloak I { get; } = new();
+
     static JsonSerializerOptions jsonOptions = new JsonSerializerOptions
     {
         TypeInfoResolver = new DefaultJsonTypeInfoResolver()
     };
 
-    public static LoginResponse? LoginToCloakReq(HttpClient client, HttpRequestMessage request, string Content, (string, string)[]? AdditionalHeaders = null)
+    public LoginResponse? LoginToCloakReq(HttpClient client, HttpRequestMessage request, string Content, (string, string)[]? AdditionalHeaders = null)
     {
         if (AdditionalHeaders != null)
         {
@@ -32,7 +34,7 @@ public class EzKeycloak : EzAuth.Interfaces.IEzAuth
         LoginResponse? loginResponse = JsonSerializer.Deserialize<LoginResponse>(responseBody, jsonOptions);
         return loginResponse;
     }
-    public static UserinfoResponse? UserinfoCloakReq(HttpClient client, HttpRequestMessage request, string? AuthorizationBearer = null)
+    public UserinfoResponse? UserinfoCloakReq(HttpClient client, HttpRequestMessage request, string? AuthorizationBearer = null)
     {
         if (AuthorizationBearer != null) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AuthorizationBearer);
         HttpResponseMessage response = client.Send(request);
@@ -44,27 +46,27 @@ public class EzKeycloak : EzAuth.Interfaces.IEzAuth
     }
 
 
-    public static bool IsTokenValid(HttpClient client, string realmUrl, string accessToken, out EzAuthUserInfo? userInfo)
+    public bool IsTokenValid(HttpClient client, string realmUrl, string accessToken, out EzAuthUserInfo? userInfo)
     {
         userInfo = UserinfoCloakReq(client, new HttpRequestMessage(HttpMethod.Get, $"{realmUrl}/protocol/openid-connect/userinfo"), accessToken)?.ToEzAuthUserInfo();
         return userInfo != null;
     }
 
-    public static LoginResponse? LoginToCloak(HttpClient client, string realmUrl, string clientId, string username, string password)
+    public LoginResponse? LoginToCloak(HttpClient client, string realmUrl, string clientId, string username, string password)
     {
         Debug.WriteLine($"Attempting to login to Keycloak realm {realmUrl} for client {clientId} with user {username} and password {password}");
         var content = $"client_id={clientId}&grant_type=password&username={WebUtility.UrlEncode(username)}&password={WebUtility.UrlEncode(password)}&scope=openid";
         var res = LoginToCloakReq(client, new HttpRequestMessage(HttpMethod.Post, $"{realmUrl}/protocol/openid-connect/token"), content) ?? throw new EzAuthException("Login failed: No response");
         return res;
     }
-    public static EzAuthLoginTokens? Login(HttpClient client, string realmUrl, string clientId, string username, string password) => LoginToCloak(client, realmUrl, clientId, username, password)?.ToEzAuthLoginTokens();
+    public EzAuthLoginTokens? Login(HttpClient client, string realmUrl, string clientId, string username, string password) => LoginToCloak(client, realmUrl, clientId, username, password)?.ToEzAuthLoginTokens();
 
-    public static LoginResponse? RefreshCloakSession(HttpClient client, string realmUrl, string clientId, string refreshToken)
+    public LoginResponse? RefreshCloakSession(HttpClient client, string realmUrl, string clientId, string refreshToken)
     {
         Debug.WriteLine($"Attempting to refresh Keycloak session for client {clientId} and refresh token {refreshToken}");
         var content = $"grant_type=refresh_token&client_id={clientId}&refresh_token={refreshToken}";
         var res = LoginToCloakReq(client, new HttpRequestMessage(HttpMethod.Post, $"{realmUrl}/protocol/openid-connect/token"), content) ?? throw new EzAuthException("RefreshCloakSession failed: No response");
         return res;
     }
-    public static EzAuthLoginTokens? RefreshSession(HttpClient client, string realmUrl, string clientId, string refreshToken) => RefreshCloakSession(client, realmUrl, clientId, refreshToken)?.ToEzAuthLoginTokens();
+    public EzAuthLoginTokens? RefreshSession(HttpClient client, string realmUrl, string clientId, string refreshToken) => RefreshCloakSession(client, realmUrl, clientId, refreshToken)?.ToEzAuthLoginTokens();
 }

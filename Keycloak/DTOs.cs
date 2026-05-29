@@ -6,11 +6,6 @@ using EzAuth.Interfaces;
 
 namespace EzAuth.Keycloak;
 
-public record KeyCloakAddress
-{
-    public string? KeycloakRealmUrl { get; init; }
-    public string? KeycloakClient { get; init; }
-}
 public class LoginResponse
 {
     public string? access_token { get; set; }

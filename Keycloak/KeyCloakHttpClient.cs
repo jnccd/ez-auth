@@ -3,7 +3,7 @@ using EzAuth.Interfaces;
 
 namespace EzAuth.Keycloak;
 
-public class KeyCloakHttpClient(KeyCloakAddress keyCloakAddress, Action<string> keyCloakRefreshTokenChanged, string? initialRefreshToken = null, HttpClient? client = null) : IEzAuthHttpClient
+public class KeyCloakHttpClient(EzAuthAddress address, Action<string> keyCloakRefreshTokenChanged, string? initialRefreshToken = null, HttpClient? client = null) : IEzAuthHttpClient
 {
     public HttpClient client = client ?? new HttpClient();
     string? currentAccessToken = null;
@@ -15,7 +15,7 @@ public class KeyCloakHttpClient(KeyCloakAddress keyCloakAddress, Action<string> 
 
     public void Login(string username, string password)
     {
-        var res = EzKeycloak.LoginToCloak(client, keyCloakAddress!.KeycloakRealmUrl!, keyCloakAddress.KeycloakClient!, username, password);
+        var res = EzKeycloak.I.LoginToCloak(client, address!.RealmUrl!, address.Client!, username, password);
         errorDuringTokenRetrieval = UpdateTokenVars(res);
 
         if (currentRefreshToken != null)
@@ -36,7 +36,7 @@ public class KeyCloakHttpClient(KeyCloakAddress keyCloakAddress, Action<string> 
 
         if (DateTime.Now >= accessTokenExpiry)
         {
-            var res = EzKeycloak.RefreshCloakSession(client, keyCloakAddress!.KeycloakRealmUrl!, keyCloakAddress.KeycloakClient!, currentRefreshToken);
+            var res = EzKeycloak.I.RefreshCloakSession(client, address!.RealmUrl!, address.Client!, currentRefreshToken);
             errorDuringTokenRetrieval = UpdateTokenVars(res);
             if (!errorDuringTokenRetrieval && currentRefreshToken != null)
                 keyCloakRefreshTokenChanged(currentRefreshToken);
