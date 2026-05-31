@@ -69,4 +69,5 @@ public class EzKeycloak : IEzAuth
         return res;
     }
     public EzAuthLoginTokens? RefreshSession(HttpClient client, string realmUrl, string clientId, string refreshToken) => RefreshCloakSession(client, realmUrl, clientId, refreshToken)?.ToEzAuthLoginTokens();
+    public string GetAccountRegistrationAddress(string realmUrl) => realmUrl + "/account";
 }
