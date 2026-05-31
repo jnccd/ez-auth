@@ -22,7 +22,7 @@ public class KeyCloakHttpClient(EzAuthAddress address, Action<string> keyCloakRe
             keyCloakRefreshTokenChanged(currentRefreshToken);
     }
 
-    public string GetAccountRegistrationAddress() => address.RealmUrl + "/account";
+    public string GetAccountRegistrationAddress(string? realmUrl = null) => (realmUrl ?? address.RealmUrl) + "/account";
 
     public bool NewLogInNeeded()
     {
