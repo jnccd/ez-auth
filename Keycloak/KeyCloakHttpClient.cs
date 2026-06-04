@@ -67,6 +67,22 @@ public class KeyCloakHttpClient(EzAuthAddress address, Action<string> keyCloakRe
         return client.PostAsync(requestUri, content);
     }
 
+    public Task<HttpResponseMessage> PutAsync([StringSyntax(StringSyntaxAttribute.Uri)] string? requestUri, HttpContent? content)
+    {
+        RefreshTokenIfNeeded();
+        client.DefaultRequestHeaders.Remove("Authorization");
+        client.DefaultRequestHeaders.Add("Authorization", $"Basic {currentAccessToken}");
+        return client.PutAsync(requestUri, content);
+    }
+
+    public Task<HttpResponseMessage> DeleteAsync([StringSyntax(StringSyntaxAttribute.Uri)] string? requestUri)
+    {
+        RefreshTokenIfNeeded();
+        client.DefaultRequestHeaders.Remove("Authorization");
+        client.DefaultRequestHeaders.Add("Authorization", $"Basic {currentAccessToken}");
+        return client.DeleteAsync(requestUri);
+    }
+
     public Task<string> GetStringAsync([StringSyntax(StringSyntaxAttribute.Uri)] string? requestUri)
     {
         RefreshTokenIfNeeded();
