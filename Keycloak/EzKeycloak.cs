@@ -16,7 +16,7 @@ public class EzKeycloak : IEzAuth
         TypeInfoResolver = new DefaultJsonTypeInfoResolver()
     };
 
-    public LoginResponse? LoginToCloakReq(HttpClient client, HttpRequestMessage request, string Content, (string, string)[]? AdditionalHeaders = null)
+    LoginResponse? LoginToCloakReq(HttpClient client, HttpRequestMessage request, string Content, (string, string)[]? AdditionalHeaders = null)
     {
         if (AdditionalHeaders != null)
         {
@@ -34,7 +34,7 @@ public class EzKeycloak : IEzAuth
         LoginResponse? loginResponse = JsonSerializer.Deserialize<LoginResponse>(responseBody, jsonOptions);
         return loginResponse;
     }
-    public UserinfoResponse? UserinfoCloakReq(HttpClient client, HttpRequestMessage request, string? AuthorizationBearer = null)
+    UserinfoResponse? UserinfoCloakReq(HttpClient client, HttpRequestMessage request, string? AuthorizationBearer = null)
     {
         if (AuthorizationBearer != null) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AuthorizationBearer);
         HttpResponseMessage response = client.Send(request);
@@ -52,7 +52,7 @@ public class EzKeycloak : IEzAuth
         return userInfo != null;
     }
 
-    public LoginResponse? LoginToCloak(HttpClient client, string realmUrl, string clientId, string username, string password)
+    LoginResponse? LoginToCloak(HttpClient client, string realmUrl, string clientId, string username, string password)
     {
         Debug.WriteLine($"Attempting to login to Keycloak realm {realmUrl} for client {clientId} with user {username} and password {password}");
         var content = $"client_id={clientId}&grant_type=password&username={WebUtility.UrlEncode(username)}&password={WebUtility.UrlEncode(password)}&scope=openid";
@@ -61,7 +61,7 @@ public class EzKeycloak : IEzAuth
     }
     public EzAuthLoginTokens? Login(HttpClient client, string realmUrl, string clientId, string username, string password) => LoginToCloak(client, realmUrl, clientId, username, password)?.ToEzAuthLoginTokens();
 
-    public LoginResponse? RefreshCloakSession(HttpClient client, string realmUrl, string clientId, string refreshToken)
+    LoginResponse? RefreshCloakSession(HttpClient client, string realmUrl, string clientId, string refreshToken)
     {
         Debug.WriteLine($"Attempting to refresh Keycloak session for client {clientId} and refresh token {refreshToken}");
         var content = $"grant_type=refresh_token&client_id={clientId}&refresh_token={refreshToken}";
