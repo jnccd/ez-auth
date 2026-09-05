@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -13,7 +13,7 @@ public class EzKeycloak : IEzAuth
 
     static JsonSerializerOptions jsonOptions = new JsonSerializerOptions
     {
-        TypeInfoResolver = new DefaultJsonTypeInfoResolver()
+        TypeInfoResolver = EzAuthJsonContext.Default
     };
 
     LoginResponse? LoginToCloakReq(HttpClient client, HttpRequestMessage request, string Content, (string, string)[]? AdditionalHeaders = null)
